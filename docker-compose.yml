@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  haproxy:
+    build: ./HAProxy/
+    hostname: haproxy
+    networks:
+      - mynetwork
+    volumes:
+      - ./HAProxy/haproxy.cfg:/etc/haproxy/haproxy.cfg
+      - ./HAProxy/haproxy.log:/var/log/haproxy.log
+    ports:
+      - "8090:8090"
+      - "8404:8404"
+  web1:
+    image: jmalloc/echo-server:latest
+    networks:
+      - mynetwork
+    ports:
+      - "8080:8080"
+
+  web2:
+    image: jmalloc/echo-server:latest
+    networks:
+      - mynetwork
+    ports:
+      - "8081:8080"
+
+  web3:
+    image: jmalloc/echo-server:latest
+    networks:
+      - mynetwork
+    ports:
+      - "8082:8080"
+
+  rsyslog:
+    build: ./rsyslog
+    networks:
+      - mynetwork
+    volumes:
+      - ./HAProxy/hap_notifications.log:/var/log/hap_notifications.log
+      - ./HAProxy/haproxy.log:/var/log/haproxy.log
+
+
+networks:
+  mynetwork:
